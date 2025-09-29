@@ -56,10 +56,46 @@ This site is not affiliated with or endorsed by Team Cherry.
     }
 
     h1 {
-      font-size: 4rem;
+      font-size: 6rem;
       margin-bottom: 1.5rem;
       color: #f0f0f0;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 4rem;
+      }
+      
+      .hover-box {
+        width: 280px;
+        font-size: 1.2rem;
+        padding: 1.5rem 1rem;
+      }
+      
+      .hover-box:hover {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* Subtle pulsing animation for the button */
+    @keyframes subtle-pulse {
+      0%, 100% {
+        box-shadow: 0 0 10px rgba(85, 85, 85, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(85, 85, 85, 0.6);
+      }
+    }
+
+    .hover-box {
+      animation: subtle-pulse 3s ease-in-out infinite;
+    }
+
+    /* Mouse-following glow effect */
+    .hover-box:hover::before {
+      opacity: 0.8;
+      transform: translate(calc(-50% + var(--glow-x)), calc(-50% + var(--glow-y))) scale(1);
     }
 
     /* Container for the centered elements */
@@ -70,19 +106,71 @@ This site is not affiliated with or endorsed by Team Cherry.
     /* Box that shows random text on hover -- fixed width to prevent shifting */
     .hover-box {
       display: inline-block;
-      width: 280px;             /* Fix width so the layout doesn't shift */
+      position: relative;
+      width: 320px;             /* Increased width for larger text */
       border: 2px solid #555;
       background-color: #666;
-      padding: 1.5rem 1rem;
-      font-size: 1.2rem;
+      padding: 2rem 1.5rem;    /* Increased padding */
+      font-size: 1.4rem;       /* Increased font size */
       color: #f0f0f0;
-      transition: background-color 0.3s, color 0.3s;
+      transition: all 1s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor: pointer;
       margin-bottom: 2rem;
+      border-radius: 15px;
+      overflow: hidden;
+      z-index: 1;
     }
+
+    /* Mouse-following glow background effect */
+    .hover-box {
+      --glow-x: 0%;
+      --glow-y: 0%;
+    }
+    
+    .hover-box::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150%;
+      height: 150%;
+      background: conic-gradient(from 0deg, #ee4f27, #6b21ef, #ee4f27);
+      border-radius: 50%;
+      opacity: 0;
+      z-index: -1;
+      transform: translate(calc(-50% + var(--glow-x)), calc(-50% + var(--glow-y))) scale(0);
+      transition: opacity 1s ease, transform 0.3s ease;
+      filter: blur(25px);
+    }
+
     .hover-box:hover {
-      background-color: #222;
+      background-color: #1a1a2e;
       color: #fff;
+      transform: scale(1.1);    /* Grow effect */
+      font-size: 1.6rem;       /* Font size increase on hover */
+      box-shadow: 0 0 30px rgba(238, 79, 39, 0.3);
+    }
+
+
+    /* Style links inside the hover box */
+    .hover-box a {
+      color: #00ff88; /* Bright cyan-green for links */
+      text-decoration: none;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .hover-box a:hover {
+      color: #66ffaa; /* Lighter green on hover */
+      text-decoration: underline;
+      text-shadow: 0 0 15px rgba(102, 255, 170, 0.8);
+      transform: scale(1.05);
+      display: inline-block;
+    }
+
+    .hover-box a:visited {
+      color: #00ff88; /* Keep same color after visiting */
     }
 
     /* Draggable item styling */
@@ -135,14 +223,40 @@ This site is not affiliated with or endorsed by Team Cherry.
       const i = Math.floor(Math.random() * messages.length);
       const msg = messages[i];
       hoverBox.innerHTML = msg;
-      if (!msg.includes('<a')) {document.title = msg;}
+      if (!msg.includes('<a')) {
+        document.title = msg;
+      } else {
+        document.title = "SILKSONG IS OUT! Click to check Steam!";
+      }
+    });
+
+    // Mouse-following glow effect
+    hoverBox.addEventListener('mousemove', (e) => {
+      const rect = hoverBox.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Calculate position as percentage relative to button center
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const offsetX = ((x - centerX) / centerX) * 50; // Max 50% offset
+      const offsetY = ((y - centerY) / centerY) * 50; // Max 50% offset
+      
+      // Apply the transform to move the glow
+      hoverBox.style.setProperty('--glow-x', `${offsetX}%`);
+      hoverBox.style.setProperty('--glow-y', `${offsetY}%`);
     });
 
     hoverBox.addEventListener('mouseleave', () => {
-      hoverBox.innerHTML = originalHTML;
-      hoverBox.addEventListener('mouseout', () => {
-      // Revert to just text, not HTML
-      hoverBox.textContent = originalText;
+      // Reset glow position
+      hoverBox.style.setProperty('--glow-x', '0%');
+      hoverBox.style.setProperty('--glow-y', '0%');
+      
+      // Small delay to allow clicking links
+      setTimeout(() => {
+        hoverBox.innerHTML = originalHTML;
+        document.title = "Is silksong out yet?"; // Reset title
+      }, 100);
     });
   </script>
 
@@ -350,4 +464,3 @@ This site is not affiliated with or endorsed by Team Cherry.
   </p>
 </footer>
 </html>
-
