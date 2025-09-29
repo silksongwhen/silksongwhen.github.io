@@ -129,22 +129,18 @@ This site is not affiliated with or endorsed by Team Cherry.
 
     
     const hoverBox = document.getElementById('hoverBox');
-    const originalText = hoverBox.textContent;
-  
-    hoverBox.addEventListener('mouseover', () => {
-    const randomIndex = Math.floor(Math.random() * messages.length);
-    const message = messages[randomIndex];
+    const originalHTML = hoverBox.innerHTML;
 
-    // Update innerHTML to show the message
-    hoverBox.innerHTML = message;
+    hoverBox.addEventListener('mouseenter', () => {
+      const i = Math.floor(Math.random() * messages.length);
+      const msg = messages[i];
+      hoverBox.innerHTML = msg;
+      if (!msg.includes('<a')) {document.title = msg;}
+    });
 
-    // If the message is a link (contains "<a>"), don't update the title
-    if (!message.includes("<a")) {
-      document.title = message;
-    }
-  });
-    
-    hoverBox.addEventListener('mouseout', () => {
+    hoverBox.addEventListener('mouseleave', () => {
+      hoverBox.innerHTML = originalHTML;
+      hoverBox.addEventListener('mouseout', () => {
       // Revert to just text, not HTML
       hoverBox.textContent = originalText;
     });
